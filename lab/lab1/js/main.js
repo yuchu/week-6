@@ -101,7 +101,13 @@ the week was the most common for garbage removal?
 var dataset = 'https://raw.githubusercontent.com/CPLN690-MUSA610/datasets/master/geojson/philadelphia-garbage-collection-boundaries.geojson';
 
 var myStyle = function(feature) {
-  return {};
+  switch(feature.properties.COLLDAY){
+    case 'MON': return {fillColor:"#33ccff"};
+    case 'TUE': return {fillColor:"#9933ff"};
+    case 'WED': return {fillColor:"#00cc99"};
+    case 'THU': return {fillColor:"#ff9933"};
+    case 'FRI': return {fillColor:"#222222"};
+  }
 };
 
 var eachFeature = function(feature, layer) {
@@ -112,12 +118,27 @@ var eachFeature = function(feature, layer) {
     you can use in your application.
     ===================== */
     console.log(feature);
+    switch(feature.properties.COLLDAY){
+      case 'MON': $('.day-of-week').text('Monday'); break;
+      case 'TUE': $('.day-of-week').text('Tuesday'); break;
+      case 'WED': $('.day-of-week').text('Wednesday'); break;
+      case 'THU': $('.day-of-week').text('Thursday'); break;
+      case 'FRI': $('.day-of-week').text('Friday'); break;
+    }
+    map.fitBounds(e.target.getBounds());
     showResults();
   });
 };
 
+$('button').click(function(e){
+  $('#intro').show();
+  $('#results').hide();
+  map.setView(new L.LatLng(40.000, -75.1090), 11);
+});
+
+
 var myFilter = function(feature) {
-  return true;
+  return (feature.properties.COLLDAY !== " ");
 };
 
 $(document).ready(function() {
@@ -128,6 +149,7 @@ $(document).ready(function() {
       style: myStyle,
       filter: myFilter
     }).addTo(map);
+    console.log(_.chain(parsedData.features).map(function(data){return data.properties.COLLDAY;}).countBy().pairs().max(_.last).value());
   });
 });
 
